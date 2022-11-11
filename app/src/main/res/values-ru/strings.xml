@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">НМедиа</string>
+    <string name="description_post_author_avatar">Аватарка автора поста</string>
+    <string name="description_post_menu">Меню сообщения</string>
+    <string name="description_post_likes">Отметок \"понравилось\"</string>
+    <string name="description_post_shares">Количество репостов</string>
+    <string name="description_post_views">Количество просмотров</string>
+    <string name="remove">Удалить</string>
+    <string name="edit">Изменить</string>
+    <string name="description_send_post">Отправить сообщение</string>
+    <string name="new_post_hint">Введите новое сообщение</string>
+    <string name="empty_content_error">Сообщение не может быть пустым</string>
+    <string name="cancel_edit">Отменить редактирование</string>
+    <string name="action_edit">Редактирование сообщения</string>
+    <string name="action_create">Создание сообщения</string>
+    <string name="dud">dud</string>
+    <string name="share_post">Поделиться сообщением</string>
+    <string name="video_preview">Предпросмотр видео</string>
+    <string name="play">Запустить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="alert_load_draft">У вас остался черновик сообщения. Загрузить?</string>
+    <string name="notification_permission_required">Требуется разрешить уведомления для их получения</string>
+    <string name="channel_remote_name">Основные уведомления</string>
+    <string name="channel_remote_description">Общие уведомления с сервера</string>
+    <string name="notification_like">Пользователю %1$s понравился пост от %2$s</string>
+    <string name="notification_unknown">Невозможно прочитать сообщение. Рекомендуется обновить приложение.</string>
+    <string name="google_play_unavailable">Сервисы Google недоступны. Некоторые функции приложения не будут работать.</string>
+    <string name="notification_newpost">Новое сообщение от %1$s</string>
+</resources>

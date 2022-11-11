@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_size">
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/tap_element_size"
+        android:layout_height="@dimen/tap_element_size"
+        android:contentDescription="@string/description_post_author_avatar"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@sample/posts_avatars" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_size"
+        android:ellipsize="end"
+        android:lines="1"
+        app:layout_constraintBottom_toTopOf="@id/published"
+        app:layout_constraintEnd_toStartOf="@id/menuButton"
+        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintTop_toTopOf="@id/avatar"
+        tools:text="@sample/posts.json/data/author" />
+
+    <TextView
+        android:id="@+id/published"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_size"
+        app:layout_constraintBottom_toBottomOf="@id/avatar"
+        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        tools:text="@sample/posts.json/data/published" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/menuButton"
+        style="@style/PostButton"
+        android:contentDescription="@string/description_post_menu"
+        app:icon="@drawable/ic_baseline_more_vert_24"
+        app:iconGravity="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/headerBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="avatar,published,menuButton" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_size"
+        android:autoLink="web"
+        app:layout_constraintTop_toBottomOf="@id/headerBarrier"
+        tools:text="@sample/posts.json/data/content" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/contentBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="content" />
+
+
+    <!--    видяшка-->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/videoFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="videoPlayButton,videoPreview, videoBackground"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/videoPlayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/play"
+        android:elevation="2dp"
+        android:src="@drawable/ic_play_64"
+        app:layout_constraintBottom_toBottomOf="@+id/videoPreview"
+        app:layout_constraintEnd_toEndOf="@+id/videoPreview"
+        app:layout_constraintStart_toStartOf="@+id/videoPreview"
+        app:layout_constraintTop_toTopOf="@+id/videoPreview" />
+
+    <ImageView
+        android:id="@+id/videoPreview"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:elevation="1dp"
+        android:contentDescription="@string/video_preview"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/contentBarrier" />
+
+    <ImageView
+        android:id="@+id/videoBackground"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#999999"
+        android:contentDescription="@string/video_preview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/contentBarrier" />
+    <!--    видяшка-->
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/postLikesIcon"
+        style="@style/PostFooterButton"
+        android:checkable="true"
+        android:contentDescription="@string/description_post_likes"
+        app:icon="@drawable/like_toggle_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoPreview"
+        tools:text="100" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/postSharesIcon"
+        style="@style/PostFooterButton"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/description_post_shares"
+        app:icon="@drawable/ic_shares_24"
+        app:layout_constraintStart_toEndOf="@id/postLikesIcon"
+        app:layout_constraintTop_toBottomOf="@+id/videoPreview"
+        tools:srcCompat="@drawable/ic_shares_24"
+        tools:text="100" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/postViewsIcon"
+        style="@style/PostFooterButton"
+        android:contentDescription="@string/description_post_views"
+        app:icon="@drawable/ic_views_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoPreview"
+        tools:srcCompat="@drawable/ic_views_24"
+        tools:text="100" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

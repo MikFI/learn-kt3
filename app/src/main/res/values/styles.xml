@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PostButton"
+        parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">?attr/colorControlNormal</item>
+        <item name="android:padding">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/tap_element_size</item>
+        <item name="android:minHeight">@dimen/tap_element_size</item>
+        <item name="iconTint">@color/like_button_tint</item>
+    </style>
+    <style name="PostFooterButton"
+        parent="PostButton">
+        <item name="iconPadding">8dp</item>
+    </style>
+    <style name="PostFooterLike"
+        parent="PostFooterButton">
+        <item name="iconTint">@color/like_button_tint</item>
+    </style>
+</resources>
