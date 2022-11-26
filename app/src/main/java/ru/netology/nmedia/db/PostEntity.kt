@@ -14,8 +14,8 @@ data class PostEntity(
     val content: String,
     val published: String,
     val likes: Int = 999,
-    val shares: Int = 100,
-    val views: Int = 100,
+//    val shares: Int = 100,
+////    val views: Int = 100,
     val likedByMe: Boolean = false,
 ) {
     //конвертация элемента бд в объект поста
@@ -26,8 +26,8 @@ data class PostEntity(
             content = content,
             published = published,
             likes = likes,
-            shares = shares,
-            views = views,
+//            shares = shares,
+//            views = views,
             likedByMe = likedByMe
         ))
     }
@@ -45,8 +45,8 @@ data class PostEntity(
                 content = post.content,
                 published = post.published,
                 likes = post.likes,
-                shares = post.shares,
-                views = post.views,
+//                shares = post.shares,
+//                views = post.views,
                 likedByMe = post.likedByMe
             ))
         }

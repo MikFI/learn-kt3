@@ -27,8 +27,8 @@ class PostViewHolder(
             published.text = post.published
             content.text = post.content
             postLikesIcon.text = parseCount(post.likes)
-            postSharesIcon.text = parseCount(post.shares)
-            postViewsIcon.text = parseCount(post.views)
+//            postSharesIcon.text = parseCount(post.shares)
+//            postViewsIcon.text = parseCount(post.views)
             postLikesIcon.isChecked = post.likedByMe
             videoFrame.visibility = View.GONE
 
@@ -39,8 +39,8 @@ class PostViewHolder(
                 if (url.contains("youtube.com") ||
                     url.contains("youtu.be")
                 ) {
-                    videoPreview.setOnClickListener {listener.playVideo(url)}
-                    videoPlayButton.setOnClickListener {listener.playVideo(url)}
+                    videoPreview.setOnClickListener { listener.playVideo(url) }
+                    videoPlayButton.setOnClickListener { listener.playVideo(url) }
                     videoFrame.visibility = View.VISIBLE
                     return@forEach
                 }
@@ -51,7 +51,9 @@ class PostViewHolder(
     //назначаем обработчики на лайк, шару и пункты меню поста
     private fun setListeners(binding: CardPostBinding, post: Post) {
         binding.apply {
-            postLikesIcon.setOnClickListener { listener.like(post) }
+            postLikesIcon.setOnClickListener {
+                listener.like(post)
+            }
             postSharesIcon.setOnClickListener { listener.share(post) }
             content.setOnClickListener { listener.openPost(post) }
             menuButton.setOnClickListener {

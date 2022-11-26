@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.*
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.utils.AndroidUtils
+import ru.netology.nmedia.utils.StringArg
 
 class NewPostFragment : Fragment() {
     //пишем\получаем текст поста
@@ -99,20 +102,27 @@ class NewPostFragment : Fragment() {
             val content = binding.newContent.text.toString()
             if (content.isNotBlank()) {
                 viewModel.changeContent(content)
+                binding.sendPostGroup.isVisible = true
+                binding.newContent.isEnabled = false
+                binding.okButton.isEnabled = false
                 viewModel.sendPost()
                 AndroidUtils.hideKeyboard(requireView())
-                findNavController().navigateUp()
+
+                //обновляем список постов локально
+                //как только получили внутри renewedPost
+                viewModel.renewedPost.observe(viewLifecycleOwner){
+                    println("+++++++")
+                    viewModel.addPostLocally(it)
+                }
+
+                //закрываем фрагмент создания поста
+                //после того как получили событие создания поста
+                viewModel.postCreated.observe(viewLifecycleOwner){
+                    findNavController().navigateUp()
+                }
             } else {
                 Toast.makeText(requireContext(), R.string.empty_content_error, Toast.LENGTH_SHORT)
                     .show()
-//                Snackbar.make(
-//                    binding.root,
-//                    R.string.empty_content_error,
-//                    Snackbar.LENGTH_INDEFINITE
-//                )
-//                    .setAction(android.R.string.ok) { //действие по кнопке ОК
-//                    }
-//                    .show()
             }
         }
         return binding.root
