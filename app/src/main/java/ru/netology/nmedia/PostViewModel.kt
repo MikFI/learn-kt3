@@ -105,22 +105,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //ставим/снимаем лайк посту с указанным id и заодно
     //изменяем livedata, чтобы подписчики поймали событие лайка
     //(и изменили в разметке цвет иконки и число лайков без перезагрузки списка постов с сервера)
-    //первый тред - "честный" запрос и обработка ответа от сервера, когда лайк проставится
-    //второй тред - локальные изменения, которые будут применены до тех пор, пока мы ждём сервер
+    //сперва локальные изменения, которые будут применены до тех пор, пока мы ждём сервер
+    //следом "честный" запрос и обработка ответа от сервера, когда лайк проставится
     fun likeById(id: Long, isLiked: Boolean) {
-        thread {
-            val likedPost = repository.likeById(id, isLiked)
-            _data.postValue(
-                _data.value?.copy(posts=
-                _data.value?.posts.orEmpty().map {
-                    //изменяем число лайков в ответе чисто ради теста, что ответ пришёл и
-                    //то, что было локальными изменениями, станет "официальными",
-                    //изменившись ещё раз при необходимости (если, например, посту натыкали ещё
-                    //лайков, пока мы ждали ответа)
-                    if (it.id == id) likedPost.copy(likes = 123) else it
-                })
-            )
-        }
         thread {
             val likeAction = if (isLiked) -1 else 1
             _data.postValue(
@@ -130,6 +117,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                         likedByMe = !isLiked,
                         likes = it.likes + likeAction,
                     ) else it
+                })
+            )
+            val likedPost = repository.likeById(id, isLiked)
+            _data.postValue(
+                _data.value?.copy(posts =
+                _data.value?.posts.orEmpty().map {
+                    //изменяем число лайков в ответе чисто ради теста, что ответ пришёл и
+                    //то, что было локальными изменениями, станет "официальными",
+                    //изменившись ещё раз при необходимости (если, например, посту натыкали ещё
+                    //лайков, пока мы ждали ответа)
+                    if (it.id == id) likedPost.copy(likes = 123) else it
                 })
             )
         }
