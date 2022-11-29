@@ -111,7 +111,6 @@ class NewPostFragment : Fragment() {
                 //обновляем список постов локально
                 //как только получили внутри renewedPost
                 viewModel.renewedPost.observe(viewLifecycleOwner){
-                    println("+++++++")
                     viewModel.addPostLocally(it)
                 }
 

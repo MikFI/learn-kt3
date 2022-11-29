@@ -72,7 +72,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //добавляем/обновляем пост в локальном списке, сразу же после сохранения поста
     //без повторной загрузки с сервера всего списка целиком
     fun addPostLocally(post: Post) {
-        println("-------addPostLocally: ${post.content} ")
         val filtered = _data.value?.posts.orEmpty().filter {
             it.id == post.id
         }
@@ -106,13 +105,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //ставим/снимаем лайк посту с указанным id и заодно
     //изменяем livedata, чтобы подписчики поймали событие лайка
     //(и изменили в разметке цвет иконки и число лайков без перезагрузки списка постов с сервера)
+    //первый тред - "честный" запрос и обработка ответа от сервера, когда лайк проставится
+    //второй тред - локальные изменения, которые будут применены до тех пор, пока мы ждём сервер
     fun likeById(id: Long, isLiked: Boolean) {
         thread {
-            repository.likeById(id, isLiked)
+            val likedPost = repository.likeById(id, isLiked)
+            _data.postValue(
+                _data.value?.copy(posts=
+                _data.value?.posts.orEmpty().map {
+                    //изменяем число лайков в ответе чисто ради теста, что ответ пришёл и
+                    //то, что было локальными изменениями, станет "официальными",
+                    //изменившись ещё раз при необходимости (если, например, посту натыкали ещё
+                    //лайков, пока мы ждали ответа)
+                    if (it.id == id) likedPost.copy(likes = 123) else it
+                })
+            )
+        }
+        thread {
             val likeAction = if (isLiked) -1 else 1
             _data.postValue(
                 _data.value?.copy(posts =
-                _data.value!!.posts.map {
+                _data.value?.posts.orEmpty().map {
                     if (it.id == id) it.copy(
                         likedByMe = !isLiked,
                         likes = it.likes + likeAction,

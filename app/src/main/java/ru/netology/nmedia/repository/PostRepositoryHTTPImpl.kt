@@ -56,7 +56,7 @@ class PostRepositoryHTTPImpl(
     }
 
     override fun likeById(id: Long, isLiked: Boolean): Post {
-        val url = "$BASE_URL/api/posts/$id/likes"
+        val url = "$BASE_URL/api/slow/posts/$id/likes"
         val request: Request = if (!isLiked) {
             Request.Builder()
                 .url(url)
