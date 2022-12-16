@@ -21,7 +21,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
         if (isGranted) {
             // FCM SDK (and your app) can post notifications.
         } else {
-            Toast.makeText(this,R.string.notification_permission_required,Toast.LENGTH_SHORT)
+            Toast.makeText(this, R.string.notification_permission_required, Toast.LENGTH_SHORT)
         }
     }
 

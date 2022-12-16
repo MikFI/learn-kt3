@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryHTTPImpl
 import ru.netology.nmedia.util.SingleLiveEvent
-import kotlin.concurrent.thread
 
 //шаблон для создания нового поста
 //если ничего, кроме content не было передано - пост именно в таком виде и
@@ -21,7 +20,6 @@ private val emptyPost: Post = Post(
 
 //viewModel связывает UI с репозиторием(хранилищем) и отвечает за обработку того, что будет отрисовано в UI
 //UI просит данные для отрисовки из хранилища через этот класс
-//class PostViewModel : ViewModel() {
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositoryHTTPImpl(
         application
@@ -51,22 +49,23 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        thread {
-            //postValue внутри себя вызывает postToMainThread, который
-            //отдаёт в главный поток какое-то действие, а тот, в свою очередь, выполняет setValue
-            //(мы внутри отдельного потока вызвать setValue не можем - именно потому что это отдельный поток)
-            //если мы отдадим несколько штук postValue до того, как хотя бы одно из них будет исполнено,
-            //то выполнится только последнее из них
-            _data.postValue(FeedModel(loading = true))
-            try {
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: Exception) {
-                FeedModel(error = true)
-            }.also {
-                _data.postValue(it)
+        //postValue внутри себя вызывает postToMainThread, который
+        //отдаёт в главный поток какое-то действие, а тот, в свою очередь, выполняет setValue
+        //(мы внутри отдельного потока вызвать setValue не можем - именно потому что это отдельный поток)
+        //если мы отдадим несколько штук postValue до того, как хотя бы одно из них будет исполнено,
+        //то выполнится только последнее из них
+        _data.postValue(FeedModel(loading = true))
+        //передаём анонимный объект, реализующий интерфейс репозитория, типизированный списком постов
+        //и в случае успеха возвращающий этот список в feedmodel
+        repository.getAllAsync(object : PostRepository.MyCallback<List<Post>> {
+            override fun onSuccess(result: List<Post>) {
+                _data.postValue(FeedModel(posts = result, empty = result.isEmpty()))
             }
-        }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     //добавляем/обновляем пост в локальном списке, сразу же после сохранения поста
@@ -75,14 +74,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         val filtered = _data.value?.posts.orEmpty().filter {
             it.id == post.id
         }
-        val emptyData = _data.value == null
+        val emptyData = _data.value?.posts?.size == 0
 
         //если это новый пост (такого у нас в списке ещё не было)
-        //то либо создаём список из одного поста (в случае, если список был пуст)
+        //то либо создаём список из одного поста (в случае, если список был пуст),
+        //заодно посылая сигнал о том, что список уже не пуст,
         //либо добавляем весь наш список к новому посту (чтобы он сверху висел)
         if (filtered.isEmpty()) {
             if (emptyData) {
-                _data.postValue(FeedModel(posts = listOf(post)))
+                _data.postValue(FeedModel(posts = listOf(post), empty = false))
             } else {
                 _data.postValue(
                     _data.value?.copy(posts = listOf(post) + _data.value!!.posts)
@@ -108,52 +108,60 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //сперва локальные изменения, которые будут применены до тех пор, пока мы ждём сервер
     //следом "честный" запрос и обработка ответа от сервера, когда лайк проставится
     fun likeById(id: Long, isLiked: Boolean) {
-        thread {
-            val likeAction = if (isLiked) -1 else 1
-            _data.postValue(
-                _data.value?.copy(posts =
-                _data.value?.posts.orEmpty().map {
-                    if (it.id == id) it.copy(
-                        likedByMe = !isLiked,
-                        likes = it.likes + likeAction,
-                    ) else it
-                })
-            )
-            val likedPost = repository.likeById(id, isLiked)
-            _data.postValue(
-                _data.value?.copy(posts =
-                _data.value?.posts.orEmpty().map {
-                    //изменяем число лайков в ответе чисто ради теста, что ответ пришёл и
-                    //то, что было локальными изменениями, станет "официальными",
-                    //изменившись ещё раз при необходимости (если, например, посту натыкали ещё
-                    //лайков, пока мы ждали ответа)
-                    if (it.id == id) likedPost.copy(likes = 123) else it
-                })
-            )
-        }
+        val likeAction = if (isLiked) -1 else 1
+        _data.postValue(
+            _data.value?.copy(posts =
+            _data.value?.posts.orEmpty().map {
+                if (it.id == id) it.copy(
+                    likedByMe = !isLiked,
+                    likes = it.likes + likeAction,
+                ) else it
+            })
+        )
+        repository.likeByIdAsync(id, isLiked, object : PostRepository.MyCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _data.postValue(
+                    _data.value?.copy(posts =
+                    _data.value?.posts.orEmpty().map {
+                        //изменяем число лайков в ответе чисто ради теста, что ответ пришёл и
+                        //то, что было локальными изменениями, станет "официальными",
+                        //изменившись ещё раз при необходимости (если, например, посту натыкали ещё
+                        //лайков, пока мы ждали ответа)
+                        if (it.id == id) result.copy(likes = 123) else it
+                    })
+                )
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
+
 
 //    fun shareById(id: Long) = repository.shareById(id)
 
     fun removeById(id: Long) {
-        thread {
-            val oldPosts = _data.value
-            //сразу удаляем пост из нашего отображаемого списка
-            val filtered = _data.value?.posts.orEmpty().filter { it.id != id }
-            _data.postValue(
-                _data.value?.copy(
-                    posts = filtered,
-                    empty = filtered.isEmpty()
-                )
+        val oldPosts = _data.value
+        //сразу удаляем пост из нашего отображаемого списка
+        val filtered = _data.value?.posts.orEmpty().filter { it.id != id }
+        _data.postValue(
+            _data.value?.copy(
+                posts = filtered,
+                empty = filtered.isEmpty()
             )
+        )
 
-            //удаляем пост из репозитория (на что требуется время)
-            try {
-                repository.removeById(id)
-            } catch (e: Exception) {
+        //удаляем пост из репозитория (на что требуется время)
+        repository.removeByIdAsync(id, object : PostRepository.MyCallback<Unit> {
+            override fun onSuccess(result: Unit) {
+                //тут сервер нам ничего полезного не отдаёт в случае успеха
+            }
+
+            override fun onError(e: Exception) {
                 _data.postValue(oldPosts)
             }
-        }
+        })
     }
 
     //суём во временный пост то, что нам отправили на редактирование
@@ -165,15 +173,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     //создаём/обновляем пост (посылаем временный пост в репозиторий - он сам разберётся),
     fun sendPost() {
-        thread {
-            tempPost.let {
-                _renewedPost.postValue(repository.save(it))
+        repository.saveAsync(tempPost, object : PostRepository.MyCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _renewedPost.postValue(result)
                 _postCreated.postValue(Unit)
+
+                //зануляем пост после сохранения, чтобы в следующий пост,
+                //прошедший через эту функцию, не просочились поля из текущего поста
+                tempPost = emptyPost
             }
-            //зануляем пост после сохранения, чтобы в следующий пост,
-            //прошедший через эту функцию, не просочились поля из текущего поста
-            tempPost = emptyPost
-        }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     //обновляем текст нашего временного поста
