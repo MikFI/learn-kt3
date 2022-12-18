@@ -16,11 +16,12 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 open class PostInteraction(private val vm: PostViewModel, private val view: View) :
     OnInteractionListener {
     override fun like(post: Post) {
-        vm.likeById(post.id)
+//        if (post.likedByMe) vm.setLike(post.id) else vm.removeLike(post.id)
+        vm.likeById(post.id, post.likedByMe)
     }
 
     override fun share(post: Post) {
-        vm.shareById(post.id)
+//        vm.shareById(post.id)
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, post.content)

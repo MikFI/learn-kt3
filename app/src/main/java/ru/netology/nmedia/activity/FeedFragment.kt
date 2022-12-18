@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -26,28 +27,27 @@ class FeedFragment : Fragment() {
         //создаём ссылку на viewModel, в которой будут производиться все действия с данными
         //здесь же, в activity, мы их только отображаем
         val viewModel: PostViewModel by viewModels(
-//            ownerProducer = ::requireParentFragment
             ownerProducer = { this.requireParentFragment() }
         )
-
-        //setContentView во фрагменте не вызывается, вместо этого onCreateView
-        //возвращает вьюшку (return binding.root в конце)
-        //setContentView(binding.root)
 
         //втыкаем взаимодействие с постом (лайк, шара, редактирование) через класс PostInteraction,
         //в котором всё это описано
         val adapter = PostAdapter(listener = PostInteraction(vm = viewModel, view = binding.root))
 
-        //получаем список постов
+        //получаем список постов (или сообщение о том, что список пуст)
+        //или отображаем ошибку получения
+        //или отображаем анимацию загрузки
         binding.postList.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            adapter.submitList(state.posts)
+            binding.errorGroup.isVisible = state.error
+            binding.loadPostsGroup.isVisible = state.loading
+            binding.emptyFeed.isVisible = state.empty
         }
 
-        //перематываем на самый верх в случае, если количество постов увеличилось
-        //в сравнении с прошлым обновлением (т.е. если только что добавили 1 пост)
-        viewModel.postsInFeed.observe(viewLifecycleOwner) {
-            binding.postList.scrollToPosition(0)
+        //вешаем на кноку "повторить" функцию загрузки списка постов
+        binding.retryFeedButton.setOnClickListener {
+            viewModel.loadPosts()
         }
 
         //переход между фрагментами по нажатию кнопки добавления поста
@@ -60,6 +60,15 @@ class FeedFragment : Fragment() {
         val fcmTokenTask = FirebaseMessaging.getInstance().token.addOnCompleteListener {}
         if (fcmTokenTask.isSuccessful) {
             Log.d(FirebaseMsgSvc.TAG, "Your firebase token is: ${fcmTokenTask.result}")
+        }
+
+        //обновляем список постов (догружаем с сервера) свайпом вниз
+        //сразу же отключаем встроенную анимамацию вместе с, собственно, обновлением
+        //они у нас свои прописаны
+        binding.feedLayout.setOnRefreshListener {
+            binding.loadPostsGroup.visibility = View.VISIBLE
+            binding.feedLayout.isRefreshing = false
+            viewModel.loadPosts()
         }
 
         return binding.root

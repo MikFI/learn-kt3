@@ -28,4 +28,9 @@
     <string name="notification_unknown">Unable to read data. Consider updating application</string>
     <string name="google_play_unavailable">Google services unavailable. Some application functionality will not work.</string>
     <string name="notification_newpost">%1$s created new post</string>
+    <string name="error_load">Can\'t load from server</string>
+    <string name="retry">Повторить</string>
+    <string name="empty_post_list">There are no posts</string>
+    <string name="receiving_posts">Receiving post list</string>
+    <string name="sending_post">Sending post</string>
 </resources>

@@ -42,8 +42,8 @@ class ViewPostFragment : Fragment() {
 
         //ищем через livedata нужный нам пост по переданному id и заполняем шаблон карточки содержимым,
         //заодно привязывая функционал
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val post = posts.find { it.id == postId } ?: run {
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            val post = state.posts.find { it.id == postId } ?: run {
                 findNavController().navigateUp()
                 return@observe
             }
