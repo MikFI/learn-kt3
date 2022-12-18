@@ -33,4 +33,5 @@
     <string name="empty_post_list">На данный момент сообщений нет</string>
     <string name="sending_post">Отправка сообщения</string>
     <string name="receiving_posts">Загрузка списка сообщений</string>
+    <string name="image_attachment">Прикреплённое изображение</string>
 </resources>

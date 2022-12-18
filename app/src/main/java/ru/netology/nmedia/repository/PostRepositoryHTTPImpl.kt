@@ -29,21 +29,6 @@ class PostRepositoryHTTPImpl(
         private val jsonType = "application/json".toMediaType()
     }
 
-//    init {
-//        //если это первый запуск (значения "firstRun" в SharedPreferences нет),
-//        //то напихиваем в репозиторий стартовый набор постов из PostDemoSet
-//        if (sharedPrefs.getBoolean("firstRun", true)) {
-//            val posts = PostDemoSet.posts.reversed()
-//            posts.forEach {
-//                save(it)
-//            }
-//            sharedPrefs.edit().apply() {
-//                putBoolean("firstRun", false)
-//                apply()
-//            }
-//        }
-//    }
-
     override fun getAllAsync(callback: PostRepository.MyCallback<List<Post>>) {
         val request: Request = Request.Builder()
             .url("$BASE_URL/api/slow/posts")

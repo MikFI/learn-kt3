@@ -1,8 +1,11 @@
 package ru.netology.nmedia.adapter
 
+import android.graphics.drawable.Animatable
 import android.view.View
 import android.widget.PopupMenu
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -22,6 +25,22 @@ class PostViewHolder(
 
     //суём в разметку (через binding) данные, прилетевшие из post
     private fun updateView(post: Post, binding: CardPostBinding) {
+
+        //получаем анимированный вектор из ресурсов и запускаем анимацию на нём
+        //(используется в качестве заглушки на подгружаемых аватарках)
+        val loadingIcon = AppCompatResources.getDrawable(binding.root.context,R.drawable.ic_loading_animated_48)
+        if (loadingIcon is Animatable) loadingIcon.start()
+
+        //загружаем аватарку поста
+        val base_url = "http://10.0.2.2:9999"
+        Glide.with(binding.avatar)
+            .load("$base_url/avatars/${post.authorAvatar}")
+            .error(R.drawable.ic_error_48)
+            .placeholder(loadingIcon)
+            .timeout(10_000)
+            .circleCrop()
+            .into(binding.avatar)
+
         binding.apply {
             author.text = post.author
             published.text = post.published
@@ -45,6 +64,17 @@ class PostViewHolder(
                     return@forEach
                 }
             }
+
+            //показываем картинку-аттач, если таковая обнаружится в посте
+            if (post.attachment != null){
+                Glide.with(binding.imageAttachment)
+                    .load("$base_url/images/${post.attachment.url}")
+                    .error(R.drawable.ic_error_48)
+                    .placeholder(loadingIcon)
+                    .timeout(10_000)
+                    .into(binding.imageAttachment)
+                imageAttachment.visibility = View.VISIBLE
+            } else imageAttachment.visibility = View.GONE
         }
     }
 
