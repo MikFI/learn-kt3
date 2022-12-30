@@ -97,11 +97,11 @@
         android:id="@+id/videoPreview"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:elevation="1dp"
         android:contentDescription="@string/video_preview"
+        android:elevation="1dp"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/contentBarrier" />
+        app:layout_constraintTop_toBottomOf="@id/imageAttachment" />
 
     <ImageView
         android:id="@+id/videoBackground"
@@ -110,9 +110,22 @@
         android:background="#999999"
         android:contentDescription="@string/video_preview"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/contentBarrier" />
+        app:layout_constraintTop_toBottomOf="@id/imageAttachment" />
     <!--    видяшка-->
 
+    <!--    картинка-аттач-->
+    <ImageView
+        android:id="@+id/imageAttachment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/image_attachment"
+        android:src="@drawable/ic_launcher_foreground"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contentBarrier"
+        tools:visibility="visible" />
+    <!--    картинка-аттач-->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/postLikesIcon"
