@@ -96,6 +96,13 @@ class NewPostFragment : Fragment() {
             binding.okButton.setImageResource(R.drawable.ic_add_24)
         }
 
+        //ловим событие от posterror - если true (сервер не отдаёт результат),
+        //то отображаем сообщение об ошибке с кнопкой "повторить"
+        viewModel.postError.observe(viewLifecycleOwner) {
+            binding.errorGroup.isVisible = true
+            binding.sendPostGroup.isVisible = false
+        }
+
         //отправляем текст из поля ввода во viewmodel по нажатию кнопки
         //или ругаем пользователя, если он ничего не ввёл
         binding.okButton.setOnClickListener {
@@ -103,6 +110,7 @@ class NewPostFragment : Fragment() {
             if (content.isNotBlank()) {
                 viewModel.changeContent(content)
                 binding.sendPostGroup.isVisible = true
+                binding.errorGroup.isVisible = false
                 binding.newContent.isEnabled = false
                 binding.okButton.isEnabled = false
                 viewModel.sendPost()
@@ -110,13 +118,13 @@ class NewPostFragment : Fragment() {
 
                 //обновляем список постов локально
                 //как только получили внутри renewedPost
-                viewModel.renewedPost.observe(viewLifecycleOwner){
+                viewModel.renewedPost.observe(viewLifecycleOwner) {
                     viewModel.addPostLocally(it)
                 }
 
                 //закрываем фрагмент создания поста
                 //после того как получили событие создания поста
-                viewModel.postCreated.observe(viewLifecycleOwner){
+                viewModel.postCreated.observe(viewLifecycleOwner) {
                     findNavController().navigateUp()
                 }
             } else {
@@ -124,6 +132,20 @@ class NewPostFragment : Fragment() {
                     .show()
             }
         }
+
+        //по нажатию retry просто заново делаем sendpost
+        //все данные уже есть во вьюмодели, менять ничего не надо
+        binding.retryButton.setOnClickListener {
+            binding.sendPostGroup.isVisible = true
+            binding.errorGroup.isVisible = false
+            viewModel.sendPost()
+        }
+
+        //закрываем фрагмент, если при ответе на ошибку пользователь тыкает "отмена"
+        binding.cancelButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -43,6 +44,12 @@ class FeedFragment : Fragment() {
             binding.errorGroup.isVisible = state.error
             binding.loadPostsGroup.isVisible = state.loading
             binding.emptyFeed.isVisible = state.empty
+        }
+
+        viewModel.postError.observe(viewLifecycleOwner){
+            if (it){
+                Toast.makeText(binding.root.context,R.string.error_connect,Toast.LENGTH_LONG).show()
+            }
         }
 
         //вешаем на кноку "повторить" функцию загрузки списка постов

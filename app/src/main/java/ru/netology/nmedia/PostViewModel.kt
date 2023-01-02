@@ -21,9 +21,7 @@ private val emptyPost: Post = Post(
 //viewModel связывает UI с репозиторием(хранилищем) и отвечает за обработку того, что будет отрисовано в UI
 //UI просит данные для отрисовки из хранилища через этот класс
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryHTTPImpl(
-        application
-    )
+    private val repository: PostRepository = PostRepositoryHTTPImpl()
 
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel> = _data
@@ -43,6 +41,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //на которые будет реагировать соответствующая следилка
     private val _renewedPost = SingleLiveEvent<Post>()
     val renewedPost: LiveData<Post> = _renewedPost
+
+    //для обработки ошибки, если какое-то действие с постом (создание/редактирование/удаление)
+    //пошло не так, как хотелось бы
+    private val _postError = SingleLiveEvent<Boolean>()
+    val postError: LiveData<Boolean> = _postError
 
     init {
         loadPosts()
@@ -133,7 +136,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _postError.postValue(true)
             }
         })
     }
@@ -160,6 +163,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(e: Exception) {
                 _data.postValue(oldPosts)
+                _postError.postValue(true)
             }
         })
     }
@@ -184,7 +188,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _postError.postValue(true)
             }
         })
     }

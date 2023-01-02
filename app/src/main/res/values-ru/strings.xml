@@ -29,9 +29,11 @@
     <string name="google_play_unavailable">Сервисы Google недоступны. Некоторые функции приложения не будут работать.</string>
     <string name="notification_newpost">Новое сообщение от %1$s</string>
     <string name="error_load">Невозможно загрузить данные</string>
-    <string name="retry">Retry</string>
+    <string name="retry">Повторить</string>
     <string name="empty_post_list">На данный момент сообщений нет</string>
     <string name="sending_post">Отправка сообщения</string>
     <string name="receiving_posts">Загрузка списка сообщений</string>
     <string name="image_attachment">Прикреплённое изображение</string>
+    <string name="error_connect">Невозможно соединиться с сервером</string>
+    <string name="cancel">Отмена</string>
 </resources>

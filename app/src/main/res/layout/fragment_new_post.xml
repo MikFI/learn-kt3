@@ -20,11 +20,69 @@
         android:inputType="textMultiLine"
         android:textColorHint="#757575" />
 
-    <!--    отправка поста-->
+    <!--    сообщение об ошибке-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/errorGroup"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="errorLoad, cancelButton, centerAnchor, retryButton, errorBackground"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/errorBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#E1E3E5"
+            android:contentDescription="@string/dud"
+            app:layout_constraintBottom_toBottomOf="@id/retryButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/errorLoad" />
+
+        <TextView
+            android:id="@+id/errorLoad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_connect"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+
+            app:layout_constraintEnd_toStartOf="@+id/centerAnchor"
+            app:layout_constraintTop_toBottomOf="@+id/errorLoad" />
+
+        <View
+            android:id="@+id/centerAnchor"
+            android:layout_width="4dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/errorLoad"
+            app:layout_constraintBottom_toBottomOf="@+id/errorBackground"/>
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry"
+            app:layout_constraintStart_toEndOf="@+id/centerAnchor"
+            app:layout_constraintTop_toBottomOf="@id/errorLoad" />
+        <!--    сообщение об ошибке-->
+
+
+        <!--    отправка поста-->
         <androidx.constraintlayout.widget.Group
             android:id="@+id/sendPostGroup"
             android:layout_width="0dp"
@@ -38,9 +96,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/sentPostText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/sentPostText"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/sentPostText"

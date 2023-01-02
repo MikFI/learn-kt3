@@ -31,9 +31,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders.usesCleartextTraffic = false
+            buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999/api/"'
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
+            buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999/api/slow/"'
         }
     }
     compileOptions {
@@ -97,6 +99,13 @@ dependencies {
 
     //для отправки запросов на сервер
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
+
+    //для упрощения взаимодействия с сервером
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+
+    //для логгирования
+    implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
 
     //для загрузки и обработки изображений
     implementation "com.github.bumptech.glide:glide:4.12.0"
